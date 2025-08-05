@@ -1,10 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class Mapa : MonoBehaviour
 {
+    [SerializeField] private SaveGame saveGame;
     [SerializeField] private List<GameObject> fases = new List<GameObject>();
-    [SerializeField] SaveGame saveGame;
 
     private void Awake()
     {
@@ -18,25 +19,39 @@ public class Mapa : MonoBehaviour
     {
         VerificarFases();
     }
+
     public void VerificarFases()
     {
-        
-        if (saveGame.VerificaSaveGame())
-        {
-            saveGame.CarregarJogo();
-            Debug.Log("Jogo carregado com sucesso");
 
-            foreach(KeyValuePair<string, int> fase in saveGame.GetNomeFase())
+        int ultimoSave = 0;
+
+        foreach (GameObject fase in fases)
+        {
+            if (saveGame.VerificarSaveGame(fase.name) || saveGame.VerificarSaveCheckPoint(name))
             {
-                foreach (GameObject faseObj in fases)
-                {
-                    if (faseObj)
-                }
+                AtivarFase(fase);
+                ultimoSave++;
             }
         }
-        else
+
+        ProximaFase("Fase" + (ultimoSave + 1));
+    }
+
+    private void AtivarFase(GameObject faseObj)
+    {
+        faseObj.GetComponent<Button>().interactable = true;
+        faseObj.GetComponent<Image>().color = Color.green;
+    }
+
+    private void ProximaFase(string faseNome)
+    {
+        foreach (GameObject fase in fases)
         {
-            Debug.Log("Nenhum jogo encontrado");
+            if (fase.name == faseNome)
+            {
+                fase.GetComponent<Button>().interactable = true;
+                fase.GetComponent<Image>().color = Color.green;
+            }
         }
     }
 }

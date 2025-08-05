@@ -1,69 +1,65 @@
 using System.Collections.Generic;
-using NUnit.Framework;
 using UnityEngine;
 
 public class SaveGame : MonoBehaviour
 {
-
-    private Dictionary<string, int> fases = new Dictionary<string, int>()
-    {
-        {"fase", (0)},
-        {"fase2", (0)},
-        {"fase3", (0)},
-        {"fase4", (0)},
-        {"fase5", (0)},
-        {"fase6", (0)},
-        {"fase7", (0)},
-        {"fase8", (0)},
-        {"fase9", (0)},
-        {"fase10", (0)},
-        {"fase11", (0)},
-        {"fase12", (0)},
-        {"fase13", (0)}
-    };
-    private int checkPoint;
+    private string nomeFase;
     private float pontos;
 
-    public void SalvarJogo(string fase, int checkPoint, float pontos)
+    // Método para salvar o estado do jogo
+    public void SalvarJogo(string fase, float pontos)
     {
         PlayerPrefs.SetInt(fase, 1);
-        PlayerPrefs.SetInt("CheckPoint", checkPoint);
         PlayerPrefs.SetFloat("Pontos", pontos);
         PlayerPrefs.Save();
     }
 
-    public void CarregarJogo()
+    public void SalvarCheckpoint(string fase, float pontos, Vector3 local)
     {
-        foreach (var fase in fases.Keys)
-        {
-            if (PlayerPrefs.HasKey(fase))
-            {
-                fases[fase] = PlayerPrefs.GetInt(fase);
-            }
+        PlayerPrefs.SetInt("Check" + fase, 1);
+        PlayerPrefs.SetFloat("Pontos", pontos);
+        PlayerPrefs.SetFloat("CheckPosX" + fase, local.x);
+        PlayerPrefs.SetFloat("CheckPosY" + fase, local.y);
+        PlayerPrefs.SetFloat("CheckPosZ" + fase, local.z);
+        PlayerPrefs.Save();
+    }
+    // Método para carregar o estado do jogo
+    public void CarregarPontos()
+    {
 
-            checkPoint = PlayerPrefs.GetInt("CheckPoint");
-            pontos = PlayerPrefs.GetFloat("Pontos");
-        }
+        pontos = PlayerPrefs.GetFloat("Pontos");
     }
 
-    public bool VerificaSaveGame()
+    //Verifica se tem save
+    public bool VerificarSaveGame(string nomeFase)
     {
-        bool temSave = PlayerPrefs.HasKey("NomeFase") && 
-                        PlayerPrefs.HasKey("CheckPoint") &&
-                           PlayerPrefs.HasKey("Pontos");
+        bool temSave = PlayerPrefs.HasKey(nomeFase) &&
+                            PlayerPrefs.HasKey("Pontos");
         return temSave;
     }
-    public Dictionary<string, int> GetNomeFase()
+
+    public bool VerificarSaveCheckPoint(string nomeFase)
     {
-        return fases;
+        bool temSave = PlayerPrefs.HasKey("Check" + nomeFase);
+        return temSave;
     }
-    public int GetCheckPoint()
-    {
-        return checkPoint;
-    }
+    // Métodos para obter os valores carregados
 
     public float GetPontos()
     {
         return pontos;
+    }
+
+    public void ResetarSave()
+    {
+        PlayerPrefs.DeleteAll();
+        pontos = 0f;
+        Debug.Log("Todos os saves foram resetados.");
+    }
+
+    public bool VerificarSaveCheckPoint()
+    {
+        bool temSave = PlayerPrefs.HasKey("Check" + nomeFase);
+        return temSave;
     }
 }

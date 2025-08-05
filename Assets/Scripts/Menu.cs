@@ -1,21 +1,29 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using UnityEngine.UI;
 
 public class Menu : MonoBehaviour
 {
-    [SerializeField] private SaveGame SaveGame;
-
-    
-  public void MudarFase(string nome)
+    [SerializeField] private SaveGame saveGame;
+    [SerializeField] private GameObject continuaButton;
+    [SerializeField] private Vector3 checkpointPosition;
+    private void Awake()
+    {
+        if (saveGame.VerificarSaveGame("Fase1") && continuaButton != null || saveGame.VerificarSaveCheckPoint("Fase1") &&continuaButton != null)
+        {
+            continuaButton.GetComponent<Button>().interactable = true;
+        }
+    }
+    public void MudarFase(string nome)
     {
         SceneManager.LoadScene(nome);
     }
 
     public void SalvarFase()
     {
-        if (SaveGame != null)
+        if (saveGame != null)
         {
-            SaveGame.SalvarJogo(SceneManager.GetActiveScene().name, 0, 0f);
+            saveGame.SalvarJogo(SceneManager.GetActiveScene().name, 0f);
             Debug.Log("Fase salva com sucesso.");
         }
         else
@@ -26,14 +34,23 @@ public class Menu : MonoBehaviour
 
     public void SalvarCheckpoint()
     {
-        if (SaveGame != null)
+        if (saveGame != null)
         {
-            SaveGame.SalvarJogo(SceneManager.GetActiveScene().name, 1, 54.1f);
-            Debug.Log("Fase salvo com sucesso, no checkpoint.");
+            saveGame.SalvarJogo(SceneManager.GetActiveScene().name, 54.1f);
+            Debug.Log("Fase salva com sucesso, no checkpoint.");
         }
         else
         {
             Debug.LogError("SaveGame não está atribuído.");
         }
     }
+
+    public void NovoJogo()
+    {
+        if (saveGame != null)
+        {
+            saveGame.ResetarSave();
+        }
+    }
+
 }
